@@ -64,6 +64,128 @@ Error responses include meaningful messages to help diagnose issues.
 
 **Documentation**: Swagger/OpenAPI
 
+## Design Decisions
+1. Layered Architecture
+   
+The API implements a clean separation of concerns with three distinct layers:
+
+    •	Controllers Layer: Handles HTTP requests/responses, input validation, and routing
+
+    •	Example: CerealController processes HTTP requests and delegates business logic to the manager layer
+
+    •	Benefits: Testable endpoints, simplified request handling, clear responsibility boundaries
+
+    •	Manager Layer: Contains business logic and orchestrates data operations
+
+    •	Example: CerealManager implements filtering, sorting, and data manipulation logic
+
+    •	Benefits: Reusable business logic, separation from data access concerns
+
+    •	Data Access Layer: Interfaces with the database via Entity Framework Core
+
+    •	Example: DBContext implementation with Cereals and Users DbSets
+
+    •	Benefits: Clean data access patterns, simplified CRUD operations
+
+This separation enhances maintainability, testability, and scalability by keeping components focused on specific responsibilities.
+
+2. Entity Framework Core
+   
+The API leverages Entity Framework Core as an ORM for several key advantages:
+
+    •	Code-First Model: Models like Cereal define the database schema using attributes like [Key]
+   
+    •	DbContext Pattern: DBContext class provides a unified interface for database operations
+   
+    •	Migration Support: Enables version control of database schema changes
+   
+    •	LINQ Integration: Allows expressive, strongly-typed queries against the database
+   
+    •	Transaction Management: Handles database transactions automatically
+   
+This approach significantly reduces boilerplate data access code while providing robust database interactions.
+
+3. JWT Authentication
+   
+JWT-based authentication was chosen for its stateless nature and security benefits:
+
+    •	Stateless Architecture: No server-side session storage needed
+
+    •	Self-Contained Tokens: Tokens carry all necessary user data (ID, username, role)
+
+    •	Digital Signatures: Ensures token integrity through HMAC-SHA256 algorithms
+
+    •	Expiration Control: Tokens include expiry claims (2 hours) limiting authentication windows
+
+    •	Cross-Domain Support: Works seamlessly across different domains and services
+
+Implementation in AuthHelpers generates tokens with proper claims, issuer, and audience validation.
+
+4. Role-Based Authorization
+   
+The API implements granular access control through role-based authorization:
+
+    •	Role Storage: User model includes a dedicated Role property
+   
+    •	JWT Claims: Roles embedded in tokens via ClaimTypes.Role
+   
+    •	Authorization Attributes: Routes protected with [Authorize(Roles = "Admin")]
+   
+    •	Role Validation: Token validation includes role verification
+   
+    •	Least Privilege Principle: Public routes require no auth, management routes require admin
+   
+This ensures sensitive operations (create, update, delete) are only accessible to authorized administrators.
+
+5. Password Hashing
+   
+BCrypt hashing provides strong security for stored passwords:
+
+    •	One-Way Hashing: Passwords can't be reverse-engineered from stored hashes
+   
+    •	Salt Integration: Each password hash includes a unique salt to prevent rainbow table attacks
+   
+    •	Computationally Intensive: Deliberate workload makes brute force attacks impractical
+   
+    • Future-Proof: Work factor can be adjusted as hardware advances
+   
+    •	Implementation: UsersManager.HashPassword() and VerifyPassword() methods encapsulate hashing logic
+   
+This prevents password exposure even in case of database compromise.
+
+6. Comprehensive Error Handling
+   
+The API implements a multi-layered error handling strategy:
+
+    •	Controller-Level Try-Catch: Each endpoint wraps operations in try-catch blocks
+   
+    •	Manager-Level Error Handling: Business logic includes appropriate exception handling
+   
+    •	Standardized HTTP Responses: Consistent error status codes (400, 401, 404, 500)
+   
+    •	Detailed Error Messages: Informative feedback for clients while avoiding security disclosures
+   
+    •	Exception Propagation: Critical errors bubble up with context maintained
+   
+    •	Logging: Console logging of errors with relevant context
+   
+This approach improves reliability, debuggability, and provides meaningful feedback to API consumers.
+
+7. Flexible Querying
+   
+The API supports dynamic data retrieval through specialized models:
+
+    •	Filter Models: CerealFilterModel allows filtering on any cereal property
+   
+    •	Sort Models: CerealSortModel enables dynamic sorting by any field in any direction
+   
+    •	Dynamic LINQ: Query composition using conditional LINQ expressions
+   
+    •	Stateless Design: No server-side query state is maintained between requests
+   
+    •	Performance Optimized: Queries execute at the database level rather than in memory
+   
+This allows clients to retrieve precisely the data they need in the desired format without requiring specialized endpoints for each query scenario.
 
 
 ## API Reference
