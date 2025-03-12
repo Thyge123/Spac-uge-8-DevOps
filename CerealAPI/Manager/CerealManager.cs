@@ -13,7 +13,7 @@ namespace CerealAPI.Manager
             _dbContext = dBContext;
         }
 
-        public Task<List<Cereal>> GetAllAsync(CerealFilterModel filter)
+        public Task<List<Cereal>> GetAllAsync(CerealFilterModel filter, CerealSortModel sort)
         {
             try
             {
@@ -34,7 +34,6 @@ namespace CerealAPI.Manager
                 if (filter.Cups.HasValue) query = query.Where(c => c.Cups == filter.Cups.Value);
                 if (filter.Rating.HasValue) query = query.Where(c => c.Rating == filter.Rating.Value);
 
-
                 if (!string.IsNullOrEmpty(filter.Manufacturer))
                 {
                     string manufacturerCode = GetManufacturerCode(filter.Manufacturer);
@@ -48,14 +47,67 @@ namespace CerealAPI.Manager
                     query = query.Where(c => EF.Functions.Like(c.Type.ToLower(), filter.Type.ToLower()));
                 }
 
+                if (sort?.SortBy != null)
+                {
+                    string sortByLower = sort.SortBy.ToLower();
+                    string sortOrderLower = sort.SortOrder?.ToLower() ?? "asc";
+
+                    switch (sortByLower)
+                    {
+                        case "name":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Name) : query.OrderByDescending(c => c.Name);
+                            break;
+                        case "calories":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Calories) : query.OrderByDescending(c => c.Calories);
+                            break;
+                        case "protein":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Protein) : query.OrderByDescending(c => c.Protein);
+                            break;
+                        case "fat":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Fat) : query.OrderByDescending(c => c.Fat);
+                            break;
+                        case "sodium":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Sodium) : query.OrderByDescending(c => c.Sodium);
+                            break;
+                        case "fiber":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Fiber) : query.OrderByDescending(c => c.Fiber);
+                            break;
+                        case "carbo":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Carbo) : query.OrderByDescending(c => c.Carbo);
+                            break;
+                        case "sugars":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Sugars) : query.OrderByDescending(c => c.Sugars);
+                            break;
+                        case "potass":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Potass) : query.OrderByDescending(c => c.Potass);
+                            break;
+                        case "vitamins":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Vitamins) : query.OrderByDescending(c => c.Vitamins);
+                            break;
+                        case "shelf":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Shelf) : query.OrderByDescending(c => c.Shelf);
+                            break;
+                        case "weight":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Weight) : query.OrderByDescending(c => c.Weight);
+                            break;
+                        case "cups":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Cups) : query.OrderByDescending(c => c.Cups);
+                            break;
+                        case "rating":
+                            query = sortOrderLower == "asc" ? query.OrderBy(c => c.Rating) : query.OrderByDescending(c => c.Rating);
+                            break;
+                    }
+                }
+
                 return query.ToListAsync();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error retrieving cereals: {ex.Message}");
-                return null;
-            }   
+                return Task.FromResult<List<Cereal>>(new List<Cereal>());
+            }
         }
+
 
         private string GetManufacturerCode(string manufacturerName)
         {
@@ -153,7 +205,7 @@ namespace CerealAPI.Manager
             {
                 _dbContext.Cereals.Add(cereal);
                 await _dbContext.SaveChangesAsync();
-                return await GetById(cereal.Id);
+                return cereal;
             }
             catch (DbUpdateException ex)
             {
@@ -165,12 +217,12 @@ namespace CerealAPI.Manager
             }
         }
 
-        public void AddFromFile()
+        public async void AddFromFile()
         {
             try
             {
                 var parser = new CerealParser("C:\\Users\\spac-25\\source\\repos\\CerealAPI\\CerealAPI\\Cereal.csv", this);
-                parser.Parse();
+                await parser.ParseAsync();
             }
             catch (Exception ex)
             {

@@ -48,7 +48,7 @@ namespace CerealAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/users/{username}")]
+        [Route("api/users/username/{username}")]
         public async Task<IActionResult> GetByUsername(string username)
         {
             try
@@ -67,7 +67,7 @@ namespace CerealAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/users/{role}")]
+        [Route("api/users/role/{role}")]
         public async Task<IActionResult> GetByRole(string role)
         {
             try

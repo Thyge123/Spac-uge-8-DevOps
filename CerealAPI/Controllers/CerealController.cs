@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace CerealAPI.Controllers
 {
     [ApiController]
+    [Route("api/products")]
     public class CerealController : Controller
     {
         private readonly CerealManager _cerealManager;
@@ -19,12 +20,12 @@ namespace CerealAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/products/cereals")]
-        public async Task<IActionResult> GetAll([FromQuery] CerealFilterModel filter)
+        [Route("cereals")]
+        public async Task<IActionResult> GetAll([FromQuery] CerealFilterModel filter, [FromQuery] CerealSortModel sort)
         {
             try
             {
-                return Ok(await _cerealManager.GetAllAsync(filter));
+                return Ok(await _cerealManager.GetAllAsync(filter, sort));
             }
             catch (Exception ex)
             {
@@ -33,7 +34,7 @@ namespace CerealAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/products/cereals/{id:int}")]
+        [Route("cereal/{id:int}")]
         public async Task<IActionResult> GeGetById(int id)
         {
             try
@@ -52,7 +53,7 @@ namespace CerealAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/products/cereals/{name}")]
+        [Route("cereal/{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
             try
@@ -71,7 +72,7 @@ namespace CerealAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/products/cereals/images")]
+        [Route("cereal/images")]
         public async Task<IActionResult> GetPictures()
         {
             try
@@ -91,7 +92,7 @@ namespace CerealAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/products/cereals/image/{name}")]
+        [Route("cereals/image/{name}")]
         public async Task<IActionResult> GetPictureOfProductByName(string name)
         {
             try
@@ -109,22 +110,40 @@ namespace CerealAPI.Controllers
             }
         }
 
-
+        /*
         [HttpPost]
         [Route("api/cereals")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Add(string name, string type, string mfr, int calories, int protein, int fat, int sodium, float fiber, float carbo, int sugars, int potass, int vitamins, int shelf, float weight, float cups, float rating)
+        {
+            try
+            {
+                var cereal = new Cereal(name, mfr, type, calories, protein, fat, sodium, fiber, carbo, sugars, potass, vitamins, shelf, weight, cups, rating);
+                var addedCereal = await _cerealManager.Add(cereal);
+                return CreatedAtAction(nameof(GetByName), new { name = addedCereal.Name }, addedCereal);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while processing cereal: {ex.Message}");
+            }
+        }
+        */
+        
+        [HttpPost]
+        [Route("cereal/add")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Add([FromBody] Cereal cereal)
         {
             try
             {
-                // Check if ID is specified
+                // Check if name is specified
                 if (cereal.Name != null)
                 {
-                    // Check if cereal with this ID exists
+                    // Check if cereal with this name exists
                     var existingCereal = await _cerealManager.GetByName(cereal.Name);
                     if (existingCereal == null)
                     {
-                        // Product doesn't exist, but ID was manually specified
+                        // Product doesn't exist, but name was manually specified
                         return BadRequest("Cannot create a cereal with a specific ID. IDs are assigned automatically.");
                     }
 
@@ -149,10 +168,9 @@ namespace CerealAPI.Controllers
                 return StatusCode(500, $"An error occurred while processing cereal: {ex.Message}");
             }
         }
-
-
+        
         [HttpPost]
-        [Route("api/cereals/file")]
+        [Route("cereal/file/add")]
         public IActionResult AddFromFile()
         {
             try
@@ -167,7 +185,7 @@ namespace CerealAPI.Controllers
         }
 
         [HttpPut]
-        [Route("api/cereals")]
+        [Route("cereal/update")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update([FromBody] Cereal cereal)
         {
@@ -187,7 +205,7 @@ namespace CerealAPI.Controllers
         }
 
         [HttpDelete]
-        [Route("api/cereals/{id:int}")]
+        [Route("cereal/delete/{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
