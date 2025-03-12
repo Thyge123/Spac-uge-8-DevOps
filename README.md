@@ -4,73 +4,48 @@
 The Cereal API is a comprehensive RESTful service that provides detailed information about breakfast cereals, featuring robust user authentication and role-based authorization. This API allows clients to retrieve, filter, and manage cereal product data along with associated product images.
 
 ### Data Model
+
 #### Cereal Properties
-•	id: Unique identifier
 
-•	name: Product name
-
-•	mfr: Manufacturer code (A, G, K, N, P, Q, R)
-
-•	type: Type code (C for Cold, H for Hot)
-
-•	calories: Calories per serving
-
-•	protein: Protein content (g)
-
-•	fat: Fat content (g)
-
-•	sodium: Sodium content (mg)
-
-•	fiber: Dietary fiber (g)
-
-•	carbo: Complex carbohydrates (g)
-
-•	sugars: Sugar content (g)
-
-•	potass: Potassium content (mg)
-
-•	vitamins: Vitamins and minerals (% of daily value)
-
-•	shelf: Display shelf position (1, 2, or 3)
-
-•	weight: Weight per serving (oz)
-
-•	cups: Volume per serving (cups)
-
-•	rating: Consumer rating (0-100)
+* **id**: Unique identifier
+* **name**: Product name
+* **mfr**: Manufacturer code (A, G, K, N, P, Q, R)
+* **type**: Type code (C for Cold, H for Hot)
+* **calories**: Calories per serving
+* **protein**: Protein content (g)
+* **fat**: Fat content (g)
+* **sodium**: Sodium content (mg)
+* **fiber**: Dietary fiber (g)
+* **carbo**: Complex carbohydrates (g)
+* **sugars**: Sugar content (g)
+* **potass**: Potassium content (mg)
+* **vitamins**: Vitamins and minerals (% of daily value)
+* **shelf**: Display shelf position (1, 2, or 3)
+* **weight**: Weight per serving (oz)
+* **cups**: Volume per serving (cups)
+* **rating**: Consumer rating 
 
 #### Manufacturer Codes
 
-•	A: American Home Food Products
-
-•	G: General Mills
-
-•	K: Kelloggs
-
-•	N: Nabisco
-
-•	P: Post
-
-•	Q: Quaker Oats
-
-•	R: Ralston Purina
+* **A**: American Home Food Products
+* **G**: General Mills
+* **K**: Kelloggs
+* **N**: Nabisco
+* **P**: Post
+* **Q**: Quaker Oats
+* **R**: Ralston Purina
 
 ### Error Handling
+
 All endpoints return appropriate HTTP status codes:
 
-•	200 OK: Request succeeded
-
-•	201 Created: Resource successfully created
-
-•	400 Bad Request: Invalid request parameters
-
-•	401 Unauthorized: Authentication required
-
-•	403 Forbidden: Insufficient permissions
-
-•	404 Not Found: Resource not found
-
-•	500 Internal Server Error: Server-side error
+* **200 OK**: Request succeeded
+* **201 Created**: Resource successfully created
+* **400 Bad Request**: Invalid request parameters
+* **401 Unauthorized**: Authentication required
+* **403 Forbidden**: Insufficient permissions
+* **404 Not Found**: Resource not found
+* **500 Internal Server Error**: Server-side error
 
 Error responses include meaningful messages to help diagnose issues.
 
