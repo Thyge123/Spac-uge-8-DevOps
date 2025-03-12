@@ -4,10 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>8736312b-1d39-4415-a809-ea42528264d5</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BCrypt" Version="1.0.0" />
+	  <PackageReference Include="BCrypt" Version="1.0.0" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />

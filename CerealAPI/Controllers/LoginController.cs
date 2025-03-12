@@ -18,19 +18,24 @@ namespace CerealAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var user = await _usersManager.GetByUsername(model.Username);
-            if (user == null)
+            try
             {
-                return Unauthorized("Invalid username");
+                var user = await _usersManager.GetByUsername(model.Username);
+                if (user == null)
+                {
+                    return Unauthorized("Invalid username");
+                }
+                if (!_usersManager.VerifyPassword(user, model.Password))
+                {
+                    return Unauthorized("Invalid password");
+                }
+                var token = _authHelpers.GenerateJWTToken(user);
+                return Ok(new { token });
             }
-
-            if (!_usersManager.VerifyPassword(user, model.Password))
+            catch (Exception ex)
             {
-                return Unauthorized("Invalid password");
-            }
-
-            var token = _authHelpers.GenerateJWTToken(user);
-            return Ok(new { token });
+                return StatusCode(500, $"An error occurred while logging in: {ex.Message}");
+            }           
         }
     }
 }

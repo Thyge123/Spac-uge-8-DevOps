@@ -1,9 +1,9 @@
 using CerealAPI.DbContext;
 using CerealAPI.Helpers;
 using CerealAPI.Manager;
-using CerealAPI.Secret;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -46,7 +46,8 @@ builder.Services.AddSwaggerGen(c =>
 
 // Configure DbContext with SQL Server
 builder.Services.AddDbContext<DBContext>(options =>
-    options.UseSqlServer(Secret.ConnectionString));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 // Add services to the container.
 builder.Services.AddScoped<CerealManager>();

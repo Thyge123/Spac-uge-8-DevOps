@@ -20,8 +20,6 @@ namespace CerealAPI.Manager
         public async Task ParseAsync()
         {
             int lineNumber = 2; // Starting after the 2 header rows
-            int successCount = 0;
-            int errorCount = 0;
 
             using (var reader = new StreamReader(_filePath))
             {
@@ -36,7 +34,6 @@ namespace CerealAPI.Manager
 
                     if (string.IsNullOrWhiteSpace(line))
                     {
-                        Console.WriteLine($"Line {lineNumber}: Empty line, skipping");
                         continue;
                     }
 
@@ -44,24 +41,20 @@ namespace CerealAPI.Manager
                     if (values.Length < 16)
                     {
                         Console.WriteLine($"Line {lineNumber}: Invalid format - expected 16 values but found {values.Length}");
-                        errorCount++;
                         continue;
                     }
 
                     try
                     {
-                        // Fix for Rating
                         var ratingString = values[15].Replace(".", "");
                         ratingString = ratingString.Insert(ratingString.Length - 6, ".");
 
-                        // Fix for Weight and Cups to handle decimal points correctly
-                        var weightString = values[13].Replace(".", ","); // Replace decimal separator
-                        var cupsString = values[14].Replace(".", ",");   // Replace decimal separator
+                        var weightString = values[13].Replace(".", ","); 
+                        var cupsString = values[14].Replace(".", ",");   
 
-                        var fiberString = values[7].Replace(".", ",");   // Replace decimal separator
-                        var carboString = values[8].Replace(".", ",");   // Replace decimal separator
+                        var fiberString = values[7].Replace(".", ",");  
+                        var carboString = values[8].Replace(".", ",");   
 
-                        // Parse and round to 2 decimal places
                         float weight = float.Parse(weightString);
                         float cups = float.Parse(cupsString);
                         weight = (float)Math.Round(weight, 2);
@@ -91,28 +84,18 @@ namespace CerealAPI.Manager
                             Cups = cups,
                             Rating = float.Parse(ratingString)
                         };
-
-                        Console.WriteLine($"Parsed cereal: {cereal.Name}, Weight: {cereal.Weight:F2}, Cups: {cereal.Cups:F2}, Rating: {cereal.Rating}");
                         await _cerealManager.Add(cereal);
-                        successCount++;
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error parsing line {lineNumber}: {line}");
-                        Console.WriteLine($"Error details: {ex.Message}");
                         if (ex.InnerException != null)
                         {
                             Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
                         }
-                        errorCount++;
                     }
                 }
             }
-
-            Console.WriteLine($"Parsing complete. Successfully parsed {successCount} cereals. Encountered {errorCount} errors.");
         }
-
-        // Keep the synchronous version for backward compatibility
         public void Parse()
         {
             ParseAsync().GetAwaiter().GetResult();

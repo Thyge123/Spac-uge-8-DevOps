@@ -15,47 +15,50 @@ namespace CerealAPI.Manager
 
         public Task<List<Cereal>> GetAllAsync(CerealFilterModel filter)
         {
-            var query = _dbContext.Cereals.AsQueryable();
-
-            // Combine all integer filters
-            if (filter.Calories.HasValue) query = query.Where(c => c.Calories == filter.Calories.Value);
-            if (filter.Protein.HasValue) query = query.Where(c => c.Protein == filter.Protein.Value);
-            if (filter.Fat.HasValue) query = query.Where(c => c.Fat == filter.Fat.Value);
-            if (filter.Sodium.HasValue) query = query.Where(c => c.Sodium == filter.Sodium.Value);
-            if (filter.Sugars.HasValue) query = query.Where(c => c.Sugars == filter.Sugars.Value);
-            if (filter.Potass.HasValue) query = query.Where(c => c.Potass == filter.Potass.Value);
-            if (filter.Vitamins.HasValue) query = query.Where(c => c.Vitamins == filter.Vitamins.Value);
-
-            // Combine all float filters
-            if (filter.Fiber.HasValue) query = query.Where(c => c.Fiber == filter.Fiber.Value);
-            if (filter.Carbo.HasValue) query = query.Where(c => c.Carbo == filter.Carbo.Value);
-            if (filter.Shelf.HasValue) query = query.Where(c => c.Shelf == filter.Shelf.Value);
-            if (filter.Weight.HasValue) query = query.Where(c => c.Weight == filter.Weight.Value);
-            if (filter.Cups.HasValue) query = query.Where(c => c.Cups == filter.Cups.Value);
-            if (filter.Rating.HasValue) query = query.Where(c => c.Rating == filter.Rating.Value);
-
-            // Handle manufacturer filter with name-to-code mapping
-            if (!string.IsNullOrEmpty(filter.Manufacturer))
+            try
             {
-                string manufacturerCode = GetManufacturerCode(filter.Manufacturer);
-                if (!string.IsNullOrEmpty(manufacturerCode))
+                var query = _dbContext.Cereals.AsQueryable();
+
+                if (filter.Calories.HasValue) query = query.Where(c => c.Calories == filter.Calories.Value);
+                if (filter.Protein.HasValue) query = query.Where(c => c.Protein == filter.Protein.Value);
+                if (filter.Fat.HasValue) query = query.Where(c => c.Fat == filter.Fat.Value);
+                if (filter.Sodium.HasValue) query = query.Where(c => c.Sodium == filter.Sodium.Value);
+                if (filter.Sugars.HasValue) query = query.Where(c => c.Sugars == filter.Sugars.Value);
+                if (filter.Potass.HasValue) query = query.Where(c => c.Potass == filter.Potass.Value);
+                if (filter.Vitamins.HasValue) query = query.Where(c => c.Vitamins == filter.Vitamins.Value);
+
+                if (filter.Fiber.HasValue) query = query.Where(c => c.Fiber == filter.Fiber.Value);
+                if (filter.Carbo.HasValue) query = query.Where(c => c.Carbo == filter.Carbo.Value);
+                if (filter.Shelf.HasValue) query = query.Where(c => c.Shelf == filter.Shelf.Value);
+                if (filter.Weight.HasValue) query = query.Where(c => c.Weight == filter.Weight.Value);
+                if (filter.Cups.HasValue) query = query.Where(c => c.Cups == filter.Cups.Value);
+                if (filter.Rating.HasValue) query = query.Where(c => c.Rating == filter.Rating.Value);
+
+
+                if (!string.IsNullOrEmpty(filter.Manufacturer))
                 {
-                    query = query.Where(c => c.Mfr == manufacturerCode);
+                    string manufacturerCode = GetManufacturerCode(filter.Manufacturer);
+                    if (!string.IsNullOrEmpty(manufacturerCode))
+                    {
+                        query = query.Where(c => c.Mfr == manufacturerCode);
+                    }
                 }
-            }
+                if (!string.IsNullOrEmpty(filter.Type))
+                {
+                    query = query.Where(c => EF.Functions.Like(c.Type.ToLower(), filter.Type.ToLower()));
+                }
 
-            if (!string.IsNullOrEmpty(filter.Type))
+                return query.ToListAsync();
+            }
+            catch (Exception ex)
             {
-                query = query.Where(c => EF.Functions.Like(c.Type.ToLower(), filter.Type.ToLower()));
-            }
-
-            // Execute the query once with all filters applied
-            return query.ToListAsync();
+                Console.WriteLine($"Error retrieving cereals: {ex.Message}");
+                return null;
+            }   
         }
 
         private string GetManufacturerCode(string manufacturerName)
         {
-            // Case-insensitive comparison
             string normalizedName = manufacturerName.Trim().ToLowerInvariant();
 
             return normalizedName switch
@@ -71,46 +74,144 @@ namespace CerealAPI.Manager
             };
         }
 
-
-        public Task<Cereal> Get(int id)
+        public Task<Cereal?> GetById(int id)
         {
-            return _dbContext.Cereals.FirstOrDefaultAsync(c => c.Id == id);
+            try
+            {
+                return _dbContext.Cereals.FirstOrDefaultAsync(c => c.Id == id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving cereal: {ex.Message}");
+                return null;
+            }
         }
 
-        public Task<Cereal> GetByName(string name)
+        public Task<Cereal?> GetByName(string name)
         {
-            return _dbContext.Cereals.FirstOrDefaultAsync(c => c.Name == name);
+            try
+            {
+                return _dbContext.Cereals.FirstOrDefaultAsync(c => c.Name == name);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving cereal: {ex.Message}");
+                return null;
+            }
         }
 
-        public Task<Cereal> Add(Cereal cereal)
+        public async Task<List<string>> GetPicturesAsync()
         {
-            _dbContext.Cereals.Add(cereal);
-            _dbContext.SaveChanges();
-            return Get(cereal.Id);
+            try
+            {
+                var pictures = new List<string>();
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "pictures");
+
+                if (Directory.Exists(path))
+                {
+                    var files = await Task.Run(() => Directory.GetFiles(path));
+                    pictures.AddRange(files);
+                }
+                return pictures;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving images: {ex.Message}");
+                return new List<string>();
+            }
+        }
+
+        public async Task<byte[]?> GetPictureOfProductByName(string name)
+        {
+            try
+            {
+                var files = await GetPicturesAsync();
+
+                string fileName = name.Replace(" ", "").ToLowerInvariant();
+
+                foreach (var file in files)
+                {
+                    string fileNameWithoutPath = Path.GetFileNameWithoutExtension(file).Replace(" ", "").ToLowerInvariant();
+
+                    if (fileNameWithoutPath.Contains(fileName) || fileName.Contains(fileNameWithoutPath))
+                    {
+                        return await File.ReadAllBytesAsync(file);
+                    }
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving image: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<Cereal?> Add(Cereal cereal)
+        {
+            try
+            {
+                _dbContext.Cereals.Add(cereal);
+                await _dbContext.SaveChangesAsync();
+                return await GetById(cereal.Id);
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new Exception ("Failed to create cereal due to database error", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An unexpected error occurred while adding cereal", ex);
+            }
         }
 
         public void AddFromFile()
         {
-            var parser = new CerealParser("C:\\Users\\spac-25\\source\\repos\\CerealAPI\\CerealAPI\\Cereal.csv", this);
-            parser.Parse();
-        }
-
-        public Task<Cereal> Update(Cereal cereal)
-        {
-            _dbContext.Cereals.Update(cereal);
-            _dbContext.SaveChanges();
-            return Get(cereal.Id);
-        }
-
-        public Task<Cereal> Delete(int id)
-        {
-            var cereal = _dbContext.Cereals.FirstOrDefault(c => c.Id == id);
-            if (cereal != null)
+            try
             {
-                _dbContext.Cereals.Remove(cereal);
-                _dbContext.SaveChanges();
+                var parser = new CerealParser("C:\\Users\\spac-25\\source\\repos\\CerealAPI\\CerealAPI\\Cereal.csv", this);
+                parser.Parse();
             }
-            return Task.FromResult(cereal);
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding cereals from file: {ex.Message}");
+            }
+        }
+
+        public Task<Cereal?> Update(Cereal cereal)
+        {
+            try
+            {
+                _dbContext.Cereals.Update(cereal);
+                _dbContext.SaveChanges();
+                return GetById(cereal.Id);
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new Exception("Failed to update cereal due to database error", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An unexpected error occurred while updating cereal", ex);
+            }
+        }
+
+        public Task<Cereal?> Delete(int id)
+        {
+            try
+            {
+                var cereal = _dbContext.Cereals.FirstOrDefault(c => c.Id == id);
+                if (cereal != null)
+                {
+                    _dbContext.Cereals.Remove(cereal);
+                    _dbContext.SaveChanges();
+                }
+                return Task.FromResult(cereal);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An unexpected error occurred while deleting cereal", ex);
+            }
         }
     }
 }

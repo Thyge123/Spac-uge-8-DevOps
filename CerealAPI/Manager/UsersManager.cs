@@ -16,46 +16,109 @@ namespace CerealAPI.Manager
 
         public Task<List<User>> GetAllAsync()
         {
-            return _dbContext.Users.ToListAsync();
+            try
+            {
+                return _dbContext.Users.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving users: {ex.Message}");
+                return null;
+            }
         }
 
-        public Task<User> Get(int id)
+        public Task<User?> Get(int id)
         {
-            return _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+            try
+            {
+                return _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving user: {ex.Message}");
+                return null;
+            }
         }
 
-        public Task<User> GetByUsername(string username)
+        public Task<User?> GetByUsername(string username)
         {
-            return _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
+            try
+            {
+                return _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving user: {ex.Message}");
+                return null;
+            }
         }
 
-        public Task<User> GetByRole(string role)
+        public Task<User?> GetByRole(string role)
         {
-            return _dbContext.Users.FirstOrDefaultAsync(u => u.Role == role);
+            try
+            {
+                return _dbContext.Users.FirstOrDefaultAsync(u => u.Role == role);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving user: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task<User> Create(User user)
         {
-            HashPassword(user);
-            await _dbContext.Users.AddAsync(user);
-            await _dbContext.SaveChangesAsync();
-            return user;
+            try
+            {
+                HashPassword(user);
+                await _dbContext.Users.AddAsync(user);
+                await _dbContext.SaveChangesAsync();
+                return user;
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new Exception("Failed to create user due to database error", ex);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating user: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task<User> Update(User user)
         {
-            _dbContext.Users.Update(user);
-            await _dbContext.SaveChangesAsync();
-            return user;
+            try
+            {
+                _dbContext.Users.Update(user);
+                await _dbContext.SaveChangesAsync();
+                return user;
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new Exception("Failed to update user due to database error", ex);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating user: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task Delete(int id)
         {
-            var user = await Get(id);
-            if (user != null)
+            try
             {
-                _dbContext.Users.Remove(user);
-                await _dbContext.SaveChangesAsync();
+                var user = await Get(id);
+                if (user != null)
+                {
+                    _dbContext.Users.Remove(user);
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting user: {ex.Message}");
             }
         }
 

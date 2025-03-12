@@ -12,6 +12,7 @@ namespace CerealAPI.Controllers
     {
         private readonly CerealManager _cerealManager;
 
+
         public CerealController(CerealManager cerealManager)
         {
             _cerealManager = cerealManager;
@@ -33,11 +34,11 @@ namespace CerealAPI.Controllers
 
         [HttpGet]
         [Route("api/products/cereals/{id:int}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GeGetById(int id)
         {
             try
             {
-                var cereal = await _cerealManager.Get(id);
+                var cereal = await _cerealManager.GetById(id);
                 if (cereal == null)
                 {
                     return NotFound();
@@ -69,6 +70,46 @@ namespace CerealAPI.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("api/products/cereals/images")]
+        public async Task<IActionResult> GetPictures()
+        {
+            try
+            {
+                var cereals =  await _cerealManager.GetPicturesAsync();
+                if (cereals == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(cereals);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while retrieving cereal image: {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        [Route("api/products/cereals/image/{name}")]
+        public async Task<IActionResult> GetPictureOfProductByName(string name)
+        {
+            try
+            {
+                var picture = await _cerealManager.GetPictureOfProductByName(name);
+                if (picture == null)
+                {
+                    return NotFound();
+                }
+                return File(picture, "image/jpeg");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while retrieving cereal image: {ex.Message}");
+            }
+        }
+
+
         [HttpPost]
         [Route("api/cereals")]
         [Authorize(Roles = "Admin")]
@@ -77,10 +118,10 @@ namespace CerealAPI.Controllers
             try
             {
                 // Check if ID is specified
-                if (cereal.Id != 0)
+                if (cereal.Name != null)
                 {
                     // Check if cereal with this ID exists
-                    var existingCereal = await _cerealManager.Get(cereal.Id);
+                    var existingCereal = await _cerealManager.GetByName(cereal.Name);
                     if (existingCereal == null)
                     {
                         // Product doesn't exist, but ID was manually specified
@@ -127,6 +168,7 @@ namespace CerealAPI.Controllers
 
         [HttpPut]
         [Route("api/cereals")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update([FromBody] Cereal cereal)
         {
             try
@@ -146,6 +188,7 @@ namespace CerealAPI.Controllers
 
         [HttpDelete]
         [Route("api/cereals/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             try
