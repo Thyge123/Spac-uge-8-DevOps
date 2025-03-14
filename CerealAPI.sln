@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35825.156 d17.13
+VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CerealAPI", "CerealAPI\CerealAPI.csproj", "{9DCCA4E9-813A-48E1-BB37-32DB760F9488}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CerealAPIDriver", "CerealAPIDriver\CerealAPIDriver.csproj", "{B9DEA21C-EF7D-4EC2-B414-1666437597BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{9DCCA4E9-813A-48E1-BB37-32DB760F9488}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DCCA4E9-813A-48E1-BB37-32DB760F9488}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DCCA4E9-813A-48E1-BB37-32DB760F9488}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9DEA21C-EF7D-4EC2-B414-1666437597BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9DEA21C-EF7D-4EC2-B414-1666437597BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9DEA21C-EF7D-4EC2-B414-1666437597BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9DEA21C-EF7D-4EC2-B414-1666437597BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -137,10 +137,10 @@ namespace CerealAPI.Controllers
             try
             {
                 // Check if name is specified
-                if (cereal.Name != null)
+                if (cereal.Id != 0)
                 {
                     // Check if cereal with this name exists
-                    var existingCereal = await _cerealManager.GetByName(cereal.Name);
+                    var existingCereal = await _cerealManager.GetById(cereal.Id);
                     if (existingCereal == null)
                     {
                         // Product doesn't exist, but name was manually specified

@@ -41,8 +41,9 @@ namespace CerealAPI.Model
             
         }
 
-        public Cereal(string name, string mfr, string type, int calories, int protein, int fat, int sodium, float fiber, float carbo, int sugars, int potass, int vitamins, int shelf, float weight, float cups, float rating)
+        public Cereal(int id, string name, string mfr, string type, int calories, int protein, int fat, int sodium, float fiber, float carbo, int sugars, int potass, int vitamins, int shelf, float weight, float cups, float rating)
         {
+            Id = id;
             Name = name;
             Mfr = mfr;
             Type = type;
