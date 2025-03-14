@@ -58,7 +58,7 @@ Error responses include meaningful messages to help diagnose issues.
 
 **Framework**: ASP.NET Core 8
 
-**Database**: SQL Server with Entity Framework Core
+**Database**: MSSQL Server with Entity Framework Core
 
 **Authentication**: JWT (JSON Web Tokens)
 
