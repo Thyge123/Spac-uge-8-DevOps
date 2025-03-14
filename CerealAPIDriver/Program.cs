@@ -72,7 +72,9 @@ try
     await driver.UpdateCerealAsync(cerealToUpdate);
 
     await driver.DeleteCerealAsync(addedCereal.Id);
-    
+
+    await driver.GetCerealByIdAsync(addedCereal.Id);
+
 }
 catch (Exception ex)
 {

@@ -15,22 +15,23 @@ namespace CerealAPI.Controllers
             _authHelpers = authHelpers;
         }
 
+        // Login user and generate JWT token
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             try
             {
-                var user = await _usersManager.GetByUsername(model.Username);
+                var user = await _usersManager.GetByUsername(model.Username); // Get user by username
                 if (user == null)
                 {
-                    return Unauthorized("Invalid username");
+                    return Unauthorized("Invalid username"); // Return unauthorized if user not found
                 }
-                if (!_usersManager.VerifyPassword(user, model.Password))
+                if (!_usersManager.VerifyPassword(user, model.Password)) // Verify password
                 {
-                    return Unauthorized("Invalid password");
+                    return Unauthorized("Invalid password"); // Return unauthorized if password is incorrect
                 }
-                var token = _authHelpers.GenerateJWTToken(user);
-                return Ok(new { token });
+                var token = _authHelpers.GenerateJWTToken(user); // Generate JWT token
+                return Ok(new { token }); // Return token
             }
             catch (Exception ex)
             {

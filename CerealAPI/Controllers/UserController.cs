@@ -7,6 +7,7 @@ namespace CerealAPI.Controllers
     [ApiController]
     public class UserController : Controller
     {
+        // Users manager to handle business logic
         private readonly UsersManager _usersManager;
 
         public UserController(UsersManager usersManager)
@@ -14,13 +15,14 @@ namespace CerealAPI.Controllers
             _usersManager = usersManager;
         }
 
+        // Get All users
         [HttpGet]
         [Route("api/users")]
         public async Task<IActionResult> GetAll()
         {
             try
             {
-                return Ok(await _usersManager.GetAllAsync());
+                return Ok(await _usersManager.GetAllAsync()); // Return all users 
             }
             catch (Exception ex)
             {
@@ -28,13 +30,14 @@ namespace CerealAPI.Controllers
             }
         }
 
+        // Get user by ID
         [HttpGet]
         [Route("api/users/{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
             try
             {
-                var user = await _usersManager.Get(id);
+                var user = await _usersManager.Get(id); 
                 if (user == null)
                 {
                     return NotFound();
@@ -47,6 +50,7 @@ namespace CerealAPI.Controllers
             }
         }
 
+        // Get user by username
         [HttpGet]
         [Route("api/users/username/{username}")]
         public async Task<IActionResult> GetByUsername(string username)
@@ -66,6 +70,7 @@ namespace CerealAPI.Controllers
             }
         }
 
+        // Get user by role
         [HttpGet]
         [Route("api/users/role/{role}")]
         public async Task<IActionResult> GetByRole(string role)
@@ -85,6 +90,7 @@ namespace CerealAPI.Controllers
             }
         }
 
+        // Create user
         [HttpPost]
         [Route("api/users")]
         public async Task<IActionResult> Create([FromBody] User user)
@@ -99,6 +105,7 @@ namespace CerealAPI.Controllers
             }
         }
 
+        // Update user 
         [HttpPut]
         [Route("api/users")]
         public async Task<IActionResult> Update([FromBody] User user)
@@ -113,6 +120,7 @@ namespace CerealAPI.Controllers
             }
         }
 
+        // Delete user by ID
         [HttpDelete]
         [Route("api/users/{id:int}")]
         public async Task<IActionResult> Delete(int id)

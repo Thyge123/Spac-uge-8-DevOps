@@ -61,5 +61,10 @@ namespace CerealAPI.Model
             Cups = cups;
             Rating = rating;
         }
+
+        public override string ToString()
+        {
+            return $"Id: {Id}, Name: {Name}, Mfr: {Mfr}, Type: {Type}, Calories: {Calories}, Protein: {Protein}, Fat: {Fat}, Sodium: {Sodium}, Fiber: {Fiber}, Carbo: {Carbo}, Sugars: {Sugars}, Potass: {Potass}, Vitamins: {Vitamins}, Shelf: {Shelf}, Weight: {Weight}, Cups: {Cups}, Rating: {Rating}";
+        }
     }
 }

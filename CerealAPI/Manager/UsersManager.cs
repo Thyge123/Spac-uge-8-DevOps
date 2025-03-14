@@ -14,6 +14,7 @@ namespace CerealAPI.Manager
             _dbContext = dBContext;
         }
 
+        // Get all users
         public Task<List<User>> GetAllAsync()
         {
             try
@@ -27,6 +28,7 @@ namespace CerealAPI.Manager
             }
         }
 
+        // Get user by ID
         public Task<User?> Get(int id)
         {
             try
@@ -40,6 +42,7 @@ namespace CerealAPI.Manager
             }
         }
 
+        // Get user by username
         public Task<User?> GetByUsername(string username)
         {
             try
@@ -53,6 +56,8 @@ namespace CerealAPI.Manager
             }
         }
 
+
+        // Get user by role
         public Task<User?> GetByRole(string role)
         {
             try
@@ -66,6 +71,7 @@ namespace CerealAPI.Manager
             }
         }
 
+        // Create a new user
         public async Task<User> Create(User user)
         {
             try
@@ -86,6 +92,7 @@ namespace CerealAPI.Manager
             }
         }
 
+        // Update a user
         public async Task<User> Update(User user)
         {
             try
@@ -105,6 +112,7 @@ namespace CerealAPI.Manager
             }
         }
 
+        // Delete a user
         public async Task Delete(int id)
         {
             try
@@ -122,14 +130,16 @@ namespace CerealAPI.Manager
             }
         }
 
+        // Hash password
         public void HashPassword(User user)
         {
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); // Hash the password before storing it
         }
 
+        // Verify password
         public bool VerifyPassword(User user, string password)
         {
-            return BCrypt.Net.BCrypt.Verify(password, user.Password);
+            return BCrypt.Net.BCrypt.Verify(password, user.Password); // Verify the password when user logs in
         }
 
     }

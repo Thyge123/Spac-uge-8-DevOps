@@ -17,7 +17,6 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cereal API", Version = "v1" });
 
-    // Updated JWT Authentication for Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header.",
@@ -44,7 +43,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Configure DbContext with SQL Server
+// Configure DbContext with SQL Server using the connection string from appsettings.json
 builder.Services.AddDbContext<DBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -57,11 +56,11 @@ builder.Services.AddScoped<AuthHelpers>();
 // Add these to your Program.cs
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; // This is the default scheme that will be used to authenticate the user
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; // This is the default scheme that will be used to challenge the user
 }).AddJwtBearer(options =>
 {
-    options.TokenValidationParameters = new TokenValidationParameters
+    options.TokenValidationParameters = new TokenValidationParameters // These are the parameters that will be used to validate the token
     {
         ValidateIssuer = true,
         ValidateAudience = true,

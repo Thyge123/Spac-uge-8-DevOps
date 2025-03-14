@@ -96,11 +96,11 @@ namespace CerealAPI.Manager
                 }
             }
         }
-        /*
+        
         public void Parse()
         {
             ParseAsync().GetAwaiter().GetResult();
         }
-        */
+        
     }
 }

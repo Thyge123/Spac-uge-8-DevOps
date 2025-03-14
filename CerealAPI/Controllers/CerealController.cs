@@ -11,21 +11,21 @@ namespace CerealAPI.Controllers
     [Route("api/products")]
     public class CerealController : Controller
     {
-        private readonly CerealManager _cerealManager;
-
+        private readonly CerealManager _cerealManager; // Cereal manager to handle business logic
 
         public CerealController(CerealManager cerealManager)
         {
             _cerealManager = cerealManager;
         }
 
+        // Get all cereals
         [HttpGet]
         [Route("cereals")]
         public async Task<IActionResult> GetAll([FromQuery] CerealFilterModel filter, [FromQuery] CerealSortModel sort)
         {
             try
             {
-                return Ok(await _cerealManager.GetAllAsync(filter, sort));
+                return Ok(await _cerealManager.GetAllAsync(filter, sort)); // Return all cereals with applied filter and sort
             }
             catch (Exception ex)
             {
@@ -33,18 +33,19 @@ namespace CerealAPI.Controllers
             }
         }
 
+        // Get cereal by ID
         [HttpGet]
         [Route("cereal/{id:int}")]
         public async Task<IActionResult> GeGetById(int id)
         {
             try
             {
-                var cereal = await _cerealManager.GetById(id);
+                var cereal = await _cerealManager.GetById(id); // Get cereal by ID
                 if (cereal == null)
                 {
-                    return NotFound();
+                    return NotFound(); // Return 404 if cereal not found
                 }
-                return Ok(cereal);
+                return Ok(cereal); // Return cereal
             }
             catch (Exception ex)
             {
@@ -52,18 +53,19 @@ namespace CerealAPI.Controllers
             }
         }
 
+        // Get cereal by name
         [HttpGet]
         [Route("cereal/{name}")]
         public async Task<IActionResult> GetByName(string name)
         {
             try
             {
-                var cereal = await _cerealManager.GetByName(name);
+                var cereal = await _cerealManager.GetByName(name); // Get cereal by name
                 if (cereal == null)
                 {
-                    return NotFound();
+                    return NotFound(); // Return 404 if cereal not found
                 }
-                return Ok(cereal);
+                return Ok(cereal); // Return cereal
             }
             catch (Exception ex)
             {
@@ -71,19 +73,20 @@ namespace CerealAPI.Controllers
             }
         }
 
+        // Get all cereal images
         [HttpGet]
         [Route("cereal/images")]
         public async Task<IActionResult> GetPictures()
         {
             try
             {
-                var cereals =  await _cerealManager.GetPicturesAsync();
+                var cereals =  await _cerealManager.GetPicturesAsync(); // Get all cereal images
                 if (cereals == null)
                 {
-                    return NotFound();
+                    return NotFound(); // Return 404 if no cereals found
                 }
 
-                return Ok(cereals);
+                return Ok(cereals); // Return cereals
             }
             catch (Exception ex)
             {
@@ -91,16 +94,17 @@ namespace CerealAPI.Controllers
             }
         }
 
+        // Get cereal image by name
         [HttpGet]
         [Route("cereals/image/{name}")]
         public async Task<IActionResult> GetPictureOfProductByName(string name)
         {
             try
             {
-                var picture = await _cerealManager.GetPictureOfProductByName(name);
+                var picture = await _cerealManager.GetPictureOfProductByName(name); // Get cereal image by name
                 if (picture == null)
                 {
-                    return NotFound();
+                    return NotFound(); // Return 404 if cereal not found
                 }
                 return File(picture, "image/jpeg");
             }
@@ -128,7 +132,8 @@ namespace CerealAPI.Controllers
             }
         }
         */
-        
+
+        // Add new cereal
         [HttpPost]
         [Route("cereal/add")]
         [Authorize(Roles = "Admin")]
@@ -152,7 +157,8 @@ namespace CerealAPI.Controllers
                     return Ok(updatedCereal);
                 }
 
-                if(cereal.Mfr.Length > 1 || cereal.Type.Length > 1)
+                // Check if manufacturer and type are single characters
+                if (cereal.Mfr.Length > 1 || cereal.Type.Length > 1)
                 {
                     return BadRequest("Manufacturer and Type must be a single character");
                 }
@@ -168,7 +174,8 @@ namespace CerealAPI.Controllers
                 return StatusCode(500, $"An error occurred while processing cereal: {ex.Message}");
             }
         }
-        
+
+        // Add new cereal from file
         [HttpPost]
         [Route("cereal/file/add")]
         public IActionResult AddFromFile()
@@ -176,7 +183,7 @@ namespace CerealAPI.Controllers
             try
             {
                 _cerealManager.AddFromFile();
-                return Ok();
+                return Ok(); // Return 200 if file processed successfully
             }
             catch (Exception ex)
             {
@@ -184,6 +191,7 @@ namespace CerealAPI.Controllers
             }
         }
 
+        // Update cereal
         [HttpPut]
         [Route("cereal/update")]
         [Authorize(Roles = "Admin")]
@@ -194,7 +202,7 @@ namespace CerealAPI.Controllers
                 var updatedCereal = await _cerealManager.Update(cereal);
                 if (updatedCereal == null)
                 {
-                    return NotFound();
+                    return NotFound(); // Return 404 if cereal not found
                 }
                 return Ok(updatedCereal);
             }
@@ -204,6 +212,7 @@ namespace CerealAPI.Controllers
             }
         }
 
+        // Delete cereal by ID
         [HttpDelete]
         [Route("cereal/delete/{id:int}")]
         [Authorize(Roles = "Admin")]
@@ -214,7 +223,7 @@ namespace CerealAPI.Controllers
                 var cereal = await _cerealManager.Delete(id);
                 if (cereal == null)
                 {
-                    return NotFound();
+                    return NotFound(); // Return 404 if cereal not found
                 }
                 return Ok(cereal);
             }

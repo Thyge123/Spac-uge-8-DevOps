@@ -65,7 +65,7 @@ namespace CerealAPIDriver
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                Console.WriteLine($"Cereal with ID {id} not found.");
+                Console.WriteLine($"\nCereal with ID {id} not found.");
             }
             else
             {
@@ -84,7 +84,7 @@ namespace CerealAPIDriver
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                Console.WriteLine($"Cereal '{name}' not found.");
+                Console.WriteLine($"\nCereal '{name}' not found.");
             }
             else
             {
@@ -121,6 +121,7 @@ namespace CerealAPIDriver
             var content = await response.Content.ReadAsStringAsync();
             var addedCereal = JsonSerializer.Deserialize<Cereal>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             Console.WriteLine($"\nCereal added successfully: {addedCereal.Name} (ID: {addedCereal.Id})");
+            Console.WriteLine(addedCereal.ToString());
             return addedCereal;  
         }
 
@@ -133,7 +134,7 @@ namespace CerealAPIDriver
             }
             else
             {
-                Console.WriteLine($"Error adding cereals from file: {response.StatusCode}");
+                Console.WriteLine($"\nError adding cereals from file: {response.StatusCode}");
                 var error = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Details: {error}");
             }
@@ -145,10 +146,11 @@ namespace CerealAPIDriver
             if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine($"\nCereal ID {cereal.Id} updated successfully");
+                Console.WriteLine(cereal.ToString());
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                Console.WriteLine($"Cereal ID {cereal.Id} not found for update");
+                Console.WriteLine($"\nCereal ID {cereal.Id} not found for update");
             }
             else
             {
@@ -167,7 +169,7 @@ namespace CerealAPIDriver
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                Console.WriteLine($"Cereal ID {id} not found for deletion");
+                Console.WriteLine($"\nCereal ID {id} not found for deletion");
             }
             else
             {
