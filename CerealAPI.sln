@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CerealAPI", "CerealAPI\Cere
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CerealAPIDriver", "CerealAPIDriver\CerealAPIDriver.csproj", "{B9DEA21C-EF7D-4EC2-B414-1666437597BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CerealAPI_Tests", "CerealAPI_Tests\CerealAPI_Tests.csproj", "{02515118-D512-6DA9-DB52-CE18015BA882}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B9DEA21C-EF7D-4EC2-B414-1666437597BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9DEA21C-EF7D-4EC2-B414-1666437597BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9DEA21C-EF7D-4EC2-B414-1666437597BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02515118-D512-6DA9-DB52-CE18015BA882}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02515118-D512-6DA9-DB52-CE18015BA882}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02515118-D512-6DA9-DB52-CE18015BA882}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02515118-D512-6DA9-DB52-CE18015BA882}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
