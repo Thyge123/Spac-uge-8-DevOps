@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CerealAPI.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class LoginController : Controller
     {
         private readonly UsersManager _usersManager;
@@ -16,7 +18,7 @@ namespace CerealAPI.Controllers
         }
 
         // Login user and generate JWT token
-        [HttpPost("login")]
+        [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             try

@@ -24,9 +24,9 @@ namespace CerealAPI.Helpers
                     _configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT key not configured"))); // Get the key from appsettings.json
                 var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256); // Create credentials
                 var claims = new List<Claim> { // Create claims
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), 
-                    new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.Role, user.Role) 
+                    new Claim("id", user.Id.ToString()), 
+                    new Claim("name", user.Username),
+                    new Claim("role", user.Role) 
                 };
                 // Create JWT token
                 var jwtToken = new JwtSecurityToken( 

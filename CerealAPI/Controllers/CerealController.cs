@@ -33,6 +33,21 @@ namespace CerealAPI.Controllers
             }
         }
 
+        // Get All cereals with their pictures
+        [HttpGet]
+        [Route("cereals/pictures")]
+        public async Task<IActionResult> GetAllWithPictures([FromQuery] CerealFilterModel filter, [FromQuery] CerealSortModel sort)
+        {
+            try
+            {
+                return Ok(await _cerealManager.GetAllWithPicturesAsync(filter, sort)); // Return all cereals with their pictures
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while retrieving cereals: {ex.Message}");
+            }
+        }
+
         // Get cereal by ID
         [HttpGet]
         [Route("cereal/{id:int}")]
@@ -41,6 +56,25 @@ namespace CerealAPI.Controllers
             try
             {
                 var cereal = await _cerealManager.GetById(id); // Get cereal by ID
+                if (cereal == null)
+                {
+                    return NotFound(); // Return 404 if cereal not found
+                }
+                return Ok(cereal); // Return cereal
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while retrieving cereal: {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        [Route("cereal/picture/{id:int}")]
+        public async Task<IActionResult> GetByIdWithPicture(int id)
+        {
+            try
+            {
+                var cereal = await _cerealManager.GetByIdWithPictures(id); // Get cereal by ID with picture
                 if (cereal == null)
                 {
                     return NotFound(); // Return 404 if cereal not found

@@ -1,4 +1,5 @@
 ﻿using CerealAPI.DbContext;
+using CerealAPI.Dto_s;
 using CerealAPI.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,6 +34,89 @@ namespace CerealAPI.Manager
                 Console.WriteLine($"Error retrieving cereals: {ex.Message}");
                 return new List<Cereal>();
             }
+
+        }
+
+        public async Task<List<CerealDTO>> GetAllWithPicturesAsync(CerealFilterModel filter, CerealSortModel sort)
+        {
+            try
+            {
+                var query = _dbContext.Cereals
+
+                    .Select(c => new Cereal
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        Mfr = c.Mfr,
+                        Type = c.Type,
+                        Calories = c.Calories,
+                        Protein = c.Protein,
+                        Fat = c.Fat,
+                        Sodium = c.Sodium,
+                        Fiber = c.Fiber,
+                        Carbo = c.Carbo,
+                        Sugars = c.Sugars,
+                        Potass = c.Potass,
+                        Vitamins = c.Vitamins,
+                        Shelf = c.Shelf,
+                        Weight = c.Weight,
+                        Cups = c.Cups,
+                        Rating = c.Rating
+                    });
+
+                // Apply filters and sorting
+
+                query = ApplyFilters(query, filter);
+
+                query = ApplySorting(query, sort);
+
+                // Get cereals from database
+
+                var cereals = await query.ToListAsync();
+
+                // Convert to DTOs
+
+                var cerealDTOs = cereals.Select(c => new CerealDTO
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Mfr = c.Mfr,
+                    Type = c.Type,
+                    Calories = c.Calories,
+                    Protein = c.Protein,
+                    Fat = c.Fat,
+                    Sodium = c.Sodium,
+                    Fiber = c.Fiber,
+                    Carbo = c.Carbo,
+                    Sugars = c.Sugars,
+                    Potass = c.Potass,
+                    Vitamins = c.Vitamins,
+                    Shelf = c.Shelf,
+                    Weight = c.Weight,
+                    Cups = c.Cups,
+                    Rating = c.Rating,
+                }).ToList();
+
+                // Convert file paths to URLs
+
+                foreach (var cereal in cerealDTOs)
+                {
+                    string normalizedName = cereal.Name.Replace(" ", "").ToLowerInvariant();
+
+                    // Set the URL to the API endpoint instead of file path
+
+                    cereal.Picture = $"/api/products/cereals/image/{Uri.EscapeDataString(cereal.Name)}";
+                }
+                return cerealDTOs;
+            }
+
+            catch (Exception ex)
+            {
+
+                Console.WriteLine($"Error retrieving cereals with pictures: {ex.Message}");
+
+                return new List<CerealDTO>();
+            }
         }
 
         // Apply filters to the query
@@ -41,7 +125,7 @@ namespace CerealAPI.Manager
             if (filter == null) return query; // If no filter is specified, return the query as is
 
             // if the filter has a value, apply the filter to the query
-            if (filter.Calories.HasValue) query = query.Where(c => c.Calories == filter.Calories.Value); 
+            if (filter.Calories.HasValue) query = query.Where(c => c.Calories == filter.Calories.Value);
             if (filter.Protein.HasValue) query = query.Where(c => c.Protein == filter.Protein.Value);
             if (filter.Fat.HasValue) query = query.Where(c => c.Fat == filter.Fat.Value);
             if (filter.Sodium.HasValue) query = query.Where(c => c.Sodium == filter.Sodium.Value);
@@ -106,7 +190,7 @@ namespace CerealAPI.Manager
         private string GetManufacturerCode(string manufacturerName)
         {
             string normalizedName = manufacturerName.Trim().ToLowerInvariant(); // Normalize the name
-            // Return the manufacturer code based on the normalized name
+                                                                                // Return the manufacturer code based on the normalized name
             return normalizedName switch
             {
                 var n when n.Contains("american home") => "A",
@@ -126,6 +210,65 @@ namespace CerealAPI.Manager
             try
             {
                 return _dbContext.Cereals.FirstOrDefaultAsync(c => c.Id == id); // Find the cereal with the given ID
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving cereal: {ex.Message}");
+                return null;
+            }
+        }
+
+        // Get a cereal with pictures by its ID
+        public Task<CerealDTO?> GetByIdWithPictures(int id)
+        {
+            try
+            {
+                var cereal = _dbContext.Cereals
+                    .Where(c => c.Id == id)
+                    .Select(c => new Cereal
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        Mfr = c.Mfr,
+                        Type = c.Type,
+                        Calories = c.Calories,
+                        Protein = c.Protein,
+                        Fat = c.Fat,
+                        Sodium = c.Sodium,
+                        Fiber = c.Fiber,
+                        Carbo = c.Carbo,
+                        Sugars = c.Sugars,
+                        Potass = c.Potass,
+                        Vitamins = c.Vitamins,
+                        Shelf = c.Shelf,
+                        Weight = c.Weight,
+                        Cups = c.Cups,
+                        Rating = c.Rating
+                    });
+
+                var cerealDTOs = cereal.Select(c => new CerealDTO
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Mfr = c.Mfr,
+                    Type = c.Type,
+                    Calories = c.Calories,
+                    Protein = c.Protein,
+                    Fat = c.Fat,
+                    Sodium = c.Sodium,
+                    Fiber = c.Fiber,
+                    Carbo = c.Carbo,
+                    Sugars = c.Sugars,
+                    Potass = c.Potass,
+                    Vitamins = c.Vitamins,
+                    Shelf = c.Shelf,
+                    Weight = c.Weight,
+                    Cups = c.Cups,
+                    Rating = c.Rating,
+                    Picture = $"/api/products/cereals/image/{Uri.EscapeDataString(c.Name)}" // Set the URL to the API endpoint instead of file path
+                }).FirstOrDefaultAsync();
+
+                return cerealDTOs; // Return the cereal with the given ID
             }
             catch (Exception ex)
             {
