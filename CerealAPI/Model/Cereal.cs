@@ -35,7 +35,6 @@ namespace CerealAPI.Model
         public float Cups { get; set; }
 
         public float Rating { get; set; }
-
         public Cereal()
         {
             
@@ -60,6 +59,7 @@ namespace CerealAPI.Model
             Weight = weight;
             Cups = cups;
             Rating = rating;
+
         }
 
         public override string ToString()
