@@ -3,6 +3,7 @@ using CerealAPI.Helpers;
 using CerealAPI.Manager;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -117,6 +118,38 @@ using (var scope = app.Services.CreateScope())
 
 app.UseCors("AllowAllOrigins");
 app.UseHttpsRedirection();
+//app.UseStaticFiles();
+
+// Production
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "Pictures")),
+    RequestPath = "/pictures",
+    ServeUnknownFileTypes = true,
+    OnPrepareResponse = ctx =>
+    {
+        // Add caching headers
+        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=3600");
+    }
+});
+
+// Development
+/*
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "CerealAPI", "Pictures")),
+    RequestPath = "/pictures",
+    ServeUnknownFileTypes = true,
+    OnPrepareResponse = ctx =>
+    {
+        // Add caching headers
+        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=3600");
+    }
+});
+*/
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

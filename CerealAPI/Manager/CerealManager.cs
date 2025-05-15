@@ -7,11 +7,13 @@ namespace CerealAPI.Manager
 {
     public class CerealManager
     {
-        private readonly DBContext _dbContext;  // Change to private readonly
+        private readonly DBContext _dbContext;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public CerealManager(DBContext dBContext)
+        public CerealManager(DBContext dBContext, IWebHostEnvironment webHostEnvironment)
         {
             _dbContext = dBContext;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // Get all cereals from the database
@@ -297,12 +299,21 @@ namespace CerealAPI.Manager
             try
             {
                 var pictures = new List<string>(); // List to store the paths of the pictures
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "pictures"); // Path to the pictures folder
+
+                // Update the path to match the one used in Program.cs
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "CerealAPI", "Pictures");
+
+                Console.WriteLine("Path:" + path);
+                Console.WriteLine("Current Directory:" + Directory.GetCurrentDirectory());
 
                 if (Directory.Exists(path)) // If the folder exists
                 {
                     var files = await Task.Run(() => Directory.GetFiles(path)); // Get all files in the folder
                     pictures.AddRange(files); // Add the files to the list
+                }
+                else
+                {
+                    Console.WriteLine($"Pictures directory not found at: {path}");
                 }
                 return pictures;
             }
