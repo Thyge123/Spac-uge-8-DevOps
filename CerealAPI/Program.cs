@@ -10,8 +10,15 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var AllowSpecificOrigins = "AllowFrontendOrigin";
+builder.Services.AddCors(o => o.AddPolicy(AllowSpecificOrigins, builder =>
+{
+    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+}));
+
 // Add services to the container.
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -78,31 +85,30 @@ var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
 
-    // Test database connection
-    using (var scope = app.Services.CreateScope())
+app.UseSwagger();
+app.UseSwaggerUI();
+
+// Test database connection
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DBContext>();
+    try
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<DBContext>();
-        try
-        {
-            // This will throw an exception if connection fails
-            dbContext.Database.CanConnect();
-            Console.WriteLine("Successfully connected to the database!");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Database connection failed: {ex.Message}");
-        }
+        // This will throw an exception if connection fails
+        dbContext.Database.CanConnect();
+        Console.WriteLine("Successfully connected to the database!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Database connection failed: {ex.Message}");
     }
 }
 
 app.UseHttpsRedirection();
-app.UseAuthentication();  
-app.UseAuthorization();   
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
+app.UseCors(AllowSpecificOrigins);
 
 app.Run();

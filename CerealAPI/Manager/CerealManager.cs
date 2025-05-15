@@ -6,7 +6,7 @@ namespace CerealAPI.Manager
 {
     public class CerealManager
     {
-        public readonly DBContext _dbContext;
+        private readonly DBContext _dbContext;  // Change to private readonly
 
         public CerealManager(DBContext dBContext)
         {
@@ -41,7 +41,7 @@ namespace CerealAPI.Manager
             if (filter == null) return query; // If no filter is specified, return the query as is
 
             // if the filter has a value, apply the filter to the query
-            if (filter.Calories.HasValue) query = query.Where(c => c.Calories == filter.Calories.Value); 
+            if (filter.Calories.HasValue) query = query.Where(c => c.Calories == filter.Calories.Value);
             if (filter.Protein.HasValue) query = query.Where(c => c.Protein == filter.Protein.Value);
             if (filter.Fat.HasValue) query = query.Where(c => c.Fat == filter.Fat.Value);
             if (filter.Sodium.HasValue) query = query.Where(c => c.Sodium == filter.Sodium.Value);
@@ -157,7 +157,7 @@ namespace CerealAPI.Manager
                 var path = Path.Combine(Directory.GetCurrentDirectory(), "pictures"); // Path to the pictures folder
 
                 if (Directory.Exists(path)) // If the folder exists
-                { 
+                {
                     var files = await Task.Run(() => Directory.GetFiles(path)); // Get all files in the folder
                     pictures.AddRange(files); // Add the files to the list
                 }
@@ -208,7 +208,7 @@ namespace CerealAPI.Manager
             }
             catch (DbUpdateException ex)
             {
-                throw new Exception ("Failed to create cereal due to database error", ex);
+                throw new Exception("Failed to create cereal due to database error", ex);
             }
             catch (Exception ex)
             {
@@ -217,16 +217,17 @@ namespace CerealAPI.Manager
         }
 
         // Add cereals from a CSV file
-        public async void AddFromFile()
+        public async Task AddFromFile()
         {
             try
             {
-                var parser = new CerealParser("C:\\Users\\spac-25\\source\\repos\\CerealAPI\\CerealAPI\\Cereal.csv", this); // Create a new parser
+                var parser = new CerealParser("Cereal.csv", this); // Create a new parser
                 await parser.ParseAsync(); // Parse the file
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error adding cereals from file: {ex.Message}");
+                throw; // Rethrow to allow proper error handling upstream
             }
         }
 
@@ -260,7 +261,7 @@ namespace CerealAPI.Manager
                     _dbContext.Cereals.Remove(cereal); // Remove the cereal
                     _dbContext.SaveChanges(); // Save changes
                 }
-                return Task.FromResult(cereal); 
+                return Task.FromResult(cereal);
             }
             catch (Exception ex)
             {

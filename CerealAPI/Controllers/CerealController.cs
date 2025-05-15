@@ -80,7 +80,7 @@ namespace CerealAPI.Controllers
         {
             try
             {
-                var cereals =  await _cerealManager.GetPicturesAsync(); // Get all cereal images
+                var cereals = await _cerealManager.GetPicturesAsync(); // Get all cereal images
                 if (cereals == null)
                 {
                     return NotFound(); // Return 404 if no cereals found
@@ -178,11 +178,11 @@ namespace CerealAPI.Controllers
         // Add new cereal from file
         [HttpPost]
         [Route("cereal/file/add")]
-        public IActionResult AddFromFile()
+        public async Task<IActionResult> AddFromFile()
         {
             try
             {
-                _cerealManager.AddFromFile();
+                await _cerealManager.AddFromFile();
                 return Ok(); // Return 200 if file processed successfully
             }
             catch (Exception ex)
